@@ -102,7 +102,7 @@ void bayerBilinearUINT32(const uint32_t* bayer, uint32_t* rgb, int sx, int sy, s
 }
 
 PYBIND11_MODULE(bayer, m) {
-    m.def("bayerBilinearUINT32", &bayer_Bilinear_uint32, "Bilinear Bayer to RGB conversion",
+    m.def("bayerBilinearUINT32", &bayerBilinearUINT32, "Bilinear Bayer to RGB conversion",
           pybind11::arg("bayer"), pybind11::arg("rgb"), pybind11::arg("sx"), pybind11::arg("sy"),
           pybind11::arg("tile") = "BG");
 }

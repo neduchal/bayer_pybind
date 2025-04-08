@@ -14,7 +14,8 @@ pybind11_add_module(bayer MODULE bayer.cpp)
 
 # Zjištění cesty pro instalaci Python modulů (site-packages) pro Python 3
 execute_process(
-    COMMAND ${Python3_EXECUTABLE} -c "import sysconfig; print(sysconfig.get_paths()['purelib'])"
+    # COMMAND ${Python3_EXECUTABLE} -c "import sysconfig; print(sysconfig.get_paths()['purelib'])"
+    COMMAND ${Python3_EXECUTABLE} -c "import site; print(site.getusersitepackages())"
     OUTPUT_VARIABLE PYTHON_SITE_PACKAGES
     OUTPUT_STRIP_TRAILING_WHITESPACE
 )

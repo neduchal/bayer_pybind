@@ -1,5 +1,8 @@
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
+#include <pybind11/numpy.h>
+
+namespace py = pybind11;
 
 // Bilinear algorithm reworked from https://github.com/jdthomas/bayer2rgb/blob/master/bayer.c
 void bayerBilinearUINT32(const uint32_t* bayer, uint32_t* rgb, int sx, int sy, std::string tile = "BG")
@@ -101,8 +104,27 @@ void bayerBilinearUINT32(const uint32_t* bayer, uint32_t* rgb, int sx, int sy, s
 	}
 }
 
+void bayerBilinearUINT32_wrapper(py::array_t<uint32_t> bayer,
+	py::array_t<uint32_t> rgb,
+	int sx, int sy,
+	std::string tile = "BG") {
+// Zkontroluj velikost
+if (bayer.size() != sx * sy)
+throw std::runtime_error("Input bayer size does not match sx * sy");
+
+if (rgb.size() != sx * sy * 3)
+throw std::runtime_error("Output rgb size must be sx * sy * 3");
+
+// Přístup k datům
+const uint32_t* bayer_ptr = bayer.data();
+uint32_t* rgb_ptr = rgb.mutable_data();
+
+// Původní funkce
+bayerBilinearUINT32(bayer_ptr, rgb_ptr, sx, sy, tile);
+}
+
 PYBIND11_MODULE(bayer, m) {
-    m.def("bayerBilinearUINT32", &bayerBilinearUINT32, "Bilinear Bayer to RGB conversion",
+    m.def("bayerBilinearUINT32", &bayerBilinearUINT32_wrapper, "Bilinear Bayer to RGB conversion",
           pybind11::arg("bayer"), pybind11::arg("rgb"), pybind11::arg("sx"), pybind11::arg("sy"),
           pybind11::arg("tile") = "BG");
 }
